@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+datasets
+transformers
+unsloth
+trl
+peft
+celery
+redis
