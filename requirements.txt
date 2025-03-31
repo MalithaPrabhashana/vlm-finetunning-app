@@ -1,9 +1,9 @@
 fastapi
 uvicorn
-datasets
-transformers
 unsloth
+transformers
+datasets
 trl
-peft
-celery
-redis
+huggingface_hub
+Pillow
+python-multipart
