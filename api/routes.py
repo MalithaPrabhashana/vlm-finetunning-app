@@ -3,6 +3,9 @@ from api.models import FineTuningRequest, InferenceRequest, SaveModelRequest
 from services.training import train_model, task_status, AVAILABLE_MODELS
 from services.save import save_model
 from services.inference import run_inference
+from fastapi.responses import StreamingResponse
+import time
+import json
 import uuid
 import os
 import shutil
@@ -35,7 +38,6 @@ def check_status(task_id: str):
         raise HTTPException(status_code=404, detail="Task not found")
 
     return {
-        "task_id": task_id,
         "status": status["status"],
         "progress": status["progress"],
         "loss": status.get("loss"),
@@ -43,6 +45,26 @@ def check_status(task_id: str):
         "epoch": status.get("epoch"),
         "error": status.get("error"),
     }
+
+@router.get("/stream-status/{task_id}")
+def stream_status(task_id: str):
+    def event_generator():
+        while True:
+            status = task_status.get(task_id)
+            if not status:
+                yield f"data: {json.dumps({'error': 'Task not found'})}\n\n"
+                break
+
+            sanitized_status = {k: v for k, v in status.items() if k != "model"}
+            yield f"data: {json.dumps(sanitized_status)}\n\n"
+
+            # Stop if training is completed or failed
+            if status["status"] in ["COMPLETED", "FAILED"]:
+                break
+
+            time.sleep(2)  # throttle the stream
+
+    return StreamingResponse(event_generator(), media_type="text/event-stream")
 
 @router.post("/save-model")
 def save_model_req(request: SaveModelRequest):

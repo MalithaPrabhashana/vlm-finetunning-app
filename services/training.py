@@ -1,15 +1,12 @@
-from datasets import load_dataset
-from fastapi import HTTPException
-from transformers import TrainerCallback, TrainerControl, TrainerState, TrainingArguments
-from trl import SFTConfig, SFTTrainer
 from unsloth import FastVisionModel, is_bf16_supported
 from unsloth.trainer import UnslothVisionDataCollator
-
+from trl import SFTTrainer, SFTConfig
+from datasets import load_dataset
 from utils.dataset_utils import convert_to_conversation
+from fastapi import HTTPException
+from transformers import TrainerCallback, TrainingArguments, TrainerState, TrainerControl
 
 AVAILABLE_MODELS = ["unsloth/Llama-3.2-Vision", "unsloth/Qwen2-VL-2B-Instruct-bnb-4bit", "unsloth/Pixtral"]
-#FIXME: "unsloth/Pixtral" repository not found
-
 task_status = {}
 
 class ProgressCallback(TrainerCallback):
@@ -88,7 +85,7 @@ def train_model(model_name: str, task_id: str):
 
         trainer.add_callback(ProgressCallback(task_id, trainer.args.max_steps))
         trainer.train()
-        task_status[task_id] = {"status": "COMPLETED", "progress": 100, "error": None, "model": model}
+        task_status[task_id] = {"status": "COMPLETED", "progress": 100, "error": None}
 
     except Exception as e:
         task_status[task_id] = {"status": "FAILED", "progress": 0, "error": str(e)}
