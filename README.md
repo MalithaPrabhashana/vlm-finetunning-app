@@ -27,3 +27,9 @@ source venv/bin/activate
 ```bash
 pip install -r requirements.txt
 ```
+
+### 4. Run FastAPI Server
+
+```bash
+uvicorn main:app --reload --port 4000
+```
