@@ -1,14 +1,15 @@
-from fastapi import APIRouter, UploadFile, File, Form, BackgroundTasks, HTTPException
-from api.models import FineTuningRequest, InferenceRequest, SaveModelRequest
-from services.training import train_model, task_status, AVAILABLE_MODELS
-from services.save import save_model
-from services.inference import run_inference
-from fastapi.responses import StreamingResponse
-import time
 import json
-import uuid
 import os
 import shutil
+import time
+import uuid
+
+from fastapi import APIRouter, BackgroundTasks, File, Form, HTTPException, UploadFile
+from fastapi.responses import StreamingResponse
+from api.models import FineTuningRequest, InferenceRequest, SaveModelRequest
+from services.inference import run_inference
+from services.save import save_model
+from services.training import AVAILABLE_MODELS, task_status, train_model, trained_models
 
 router = APIRouter()
 
@@ -69,9 +70,11 @@ def stream_status(task_id: str):
 @router.post("/save-model")
 def save_model_req(request: SaveModelRequest):
     status = task_status.get(request.app_name)
-    if not status or "model" not in status:
-        raise HTTPException(status_code=404, detail="Model not found or training not completed")
-    return save_model(status["model"], request.app_name, request.hf_username, request.hf_token)
+    if status:
+        for task_id in trained_models.items():
+            return save_model(task_id, request.app_name, request.hf_username, request.hf_token)
+
+    raise HTTPException(status_code=404, detail="Model not found or training not completed")
 
 @router.post("/inference")
 async def inference(request: InferenceRequest):

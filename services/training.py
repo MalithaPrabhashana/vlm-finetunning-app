@@ -8,6 +8,7 @@ from transformers import TrainerCallback, TrainingArguments, TrainerState, Train
 
 AVAILABLE_MODELS = ["unsloth/Llama-3.2-Vision", "unsloth/Qwen2-VL-2B-Instruct-bnb-4bit", "unsloth/Pixtral"]
 task_status = {}
+trained_models = {}
 
 class ProgressCallback(TrainerCallback):
     def __init__(self, task_id: str, total_steps: int):
@@ -68,7 +69,7 @@ def train_model(model_name: str, task_id: str):
             args=SFTConfig(
                 per_device_train_batch_size=2,
                 gradient_accumulation_steps=4,
-                max_steps=30,
+                max_steps=20,
                 learning_rate=2e-4,
                 fp16=not is_bf16_supported(),
                 bf16=is_bf16_supported(),
@@ -86,6 +87,7 @@ def train_model(model_name: str, task_id: str):
         trainer.add_callback(ProgressCallback(task_id, trainer.args.max_steps))
         trainer.train()
         task_status[task_id] = {"status": "COMPLETED", "progress": 100, "error": None}
+        trained_models[task_id] = model
 
     except Exception as e:
         task_status[task_id] = {"status": "FAILED", "progress": 0, "error": str(e)}

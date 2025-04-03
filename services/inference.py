@@ -1,9 +1,10 @@
 import os
-from fastapi import HTTPException
 import torch
-from unsloth import FastVisionModel
-from transformers import TextStreamer
+from fastapi import HTTPException
 from PIL import Image
+from transformers import TextStreamer
+from unsloth import FastVisionModel
+
 
 def run_inference(request):
     model_path = f"models/finetuned"
