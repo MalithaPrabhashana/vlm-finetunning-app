@@ -1,13 +1,31 @@
+from datasets import load_dataset
+from fastapi import HTTPException
+from transformers import TrainerCallback
+from trl import SFTConfig, SFTTrainer
 from unsloth import FastVisionModel, is_bf16_supported
 from unsloth.trainer import UnslothVisionDataCollator
-from trl import SFTTrainer, SFTConfig
-from datasets import load_dataset
+
 from utils.dataset_utils import convert_to_conversation
-from utils.progress_callback import ProgressCallback
-from fastapi import HTTPException
 
 AVAILABLE_MODELS = ["unsloth/Llama-3.2-Vision", "unsloth/Qwen2-VL-2B-Instruct-bnb-4bit", "unsloth/Pixtral"]
 task_status = {}
+
+
+class ProgressCallback(TrainerCallback):
+    def __init__(self, task_id: str, total_steps: int):
+        self.task_id = task_id
+        self.total_steps = total_steps
+
+    def on_step_end(self, args, state, control, **kwargs):
+        progress = int((state.global_step / self.total_steps) * 100)
+        task_status[self.task_id] = {"status": "RUNNING", "progress": progress, "error": None}
+
+    def on_train_end(self, args, state, control, **kwargs):
+        task_status[self.task_id] = {"status": "COMPLETED", "progress": 100, "error": None}
+
+    def on_train_begin(self, args, state, control, **kwargs):
+        task_status[self.task_id] = {"status": "RUNNING", "progress": 0, "error": None}
+
 
 def train_model(model_name: str, task_id: str):
     if model_name not in AVAILABLE_MODELS:
