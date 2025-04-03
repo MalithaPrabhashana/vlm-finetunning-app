@@ -18,7 +18,6 @@ async def upload_dataset(file: UploadFile = File(...), user_id: str = Form(...))
     user_folder = f"datasets/{user_id}"
     os.makedirs(user_folder, exist_ok=True)
     upload_path = f"{user_folder}/{file.filename}"
-    
     with open(upload_path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
     return {"filename": file.filename, "path": upload_path}
@@ -34,11 +33,15 @@ def check_status(task_id: str):
     status = task_status.get(task_id)
     if not status:
         raise HTTPException(status_code=404, detail="Task not found")
+
     return {
         "task_id": task_id,
         "status": status["status"],
         "progress": status["progress"],
-        "error": status["error"] if status["error"] else None
+        "loss": status.get("loss"),
+        "learning_rate": status.get("learning_rate"),
+        "epoch": status.get("epoch"),
+        "error": status.get("error"),
     }
 
 @router.post("/save-model")
