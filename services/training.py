@@ -87,7 +87,7 @@ def train_model(model_name: str, task_id: str):
         trainer.add_callback(ProgressCallback(task_id, trainer.args.max_steps))
         trainer.train()
         task_status[task_id] = {"status": "COMPLETED", "progress": 100, "error": None}
-        trained_models[task_id] = model
+        trained_models[task_id] = (model, tokenizer)
 
     except Exception as e:
         task_status[task_id] = {"status": "FAILED", "progress": 0, "error": str(e)}

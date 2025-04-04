@@ -6,9 +6,9 @@ import uuid
 
 from fastapi import APIRouter, BackgroundTasks, File, Form, HTTPException, UploadFile
 from fastapi.responses import StreamingResponse
-from api.models import FineTuningRequest, InferenceRequest, SaveModelRequest
+from api.models import FineTuningRequest, InferenceRequest, SaveModelRequest, GGUFSaveRequest
 from services.inference import run_inference
-from services.save import save_model
+from services.save import save_model, save_gguf_model
 from services.training import AVAILABLE_MODELS, task_status, train_model, trained_models
 
 router = APIRouter()
@@ -69,12 +69,22 @@ def stream_status(task_id: str):
 
 @router.post("/save-model")
 def save_model_req(request: SaveModelRequest):
-    status = task_status.get(request.app_name)
-    if status:
+    try:
         for task_id in trained_models.items():
             return save_model(task_id, request.app_name, request.hf_username, request.hf_token)
+    except:
+        raise HTTPException(status_code=404, detail="Model not found or training not completed")
 
-    raise HTTPException(status_code=404, detail="Model not found or training not completed")
+@router.post("/save-gguf")
+def save_gguf_endpoint(request: GGUFSaveRequest):
+    try:
+        return save_gguf_model(
+            task_id=request.task_id,
+            output_dir=request.output_dir,
+            quant_method=request.quant_method
+        )
+    except:
+        raise HTTPException(status_code=404, detail="Model not found or training not completed")
 
 @router.post("/inference")
 async def inference(request: InferenceRequest):
