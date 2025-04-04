@@ -1,0 +1,15 @@
+model_name,goal_type,target,batch_size,learning_rate,epochs,optimizer,mixed_precision,sequence_length
+unsloth/Llama-3.2-11B-Vision,Accuracy,85%,8,1.5e-05,10,AdamW,No,2048
+unsloth/Llama-3.2-11B-Vision,Accuracy,87%,6,1.3e-05,12,AdamW,No,2048
+unsloth/Llama-3.2-11B-Vision,Accuracy,88%,4,1.2e-05,14,AdamW,No,2048
+unsloth/Llama-3.2-11B-Vision,Accuracy,89%,4,1e-05,16,AdamW,No,2048
+unsloth/Llama-3.2-11B-Vision,Accuracy,90%,4,9e-06,18,AdamW,No,2048
+unsloth/Llama-3.2-11B-Vision,Accuracy,91%,2,8e-06,20,AdamW,No,2048
+unsloth/Llama-3.2-11B-Vision,Accuracy,92%,2,6e-06,24,AdamW,No,2048
+unsloth/Llama-3.2-11B-Vision,Accuracy,93%,2,5e-06,26,AdamW,No,2048
+unsloth/Llama-3.2-11B-Vision,Accuracy,94%,1,4e-06,30,AdamW,No,2048
+unsloth/Llama-3.2-11B-Vision,Accuracy,95%,1,3e-06,32,AdamW,No,2048
+unsloth/Llama-3.2-11B-Vision,Compute,32GB,4,1e-05,6,AdamW 8-bit,Yes,1024
+unsloth/Llama-3.2-11B-Vision,Compute,28GB,6,1.5e-05,4,AdamW 8-bit,Yes,1024
+unsloth/Llama-3.2-11B-Vision,Compute,24GB,8,2e-05,3,AdamW 8-bit,Yes,1024
+unsloth/Llama-3.2-11B-Vision,Compute,20GB,8,2.5e-05,2,AdamW 8-bit,Yes,768

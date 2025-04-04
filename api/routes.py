@@ -10,12 +10,13 @@ from fastapi.responses import StreamingResponse
 from api.models import (
     FineTuningRequest,
     GGUFSaveRequest,
+    GoalTrainingRequest,
     InferenceRequest,
     SaveModelRequest,
 )
 from services.inference import run_inference
 from services.save import save_gguf_model, save_model
-from services.training import AVAILABLE_MODELS, task_status, train_model, trained_models
+from services.training import AVAILABLE_MODELS, task_status, train_model, trained_models, train_model_with_goal
 
 router = APIRouter()
 
@@ -43,6 +44,24 @@ async def start_finetuning(
     background_tasks.add_task(train_model, request.model_name, task_id)
     return {"task_id": task_id, "status": "STARTED"}
 
+@router.post("/tune-with-goal")
+async def train_with_goal(
+    request: GoalTrainingRequest,
+    background_tasks: BackgroundTasks
+):
+    task_id = str(uuid.uuid4())
+    try:
+        background_tasks.add_task(
+            train_model_with_goal,
+            task_id,
+            request.model_name,
+            request.dataset_path,
+            request.goal_type,
+            request.target
+        )
+        return {"task_id": task_id, "status": "STARTED"}
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
 @router.get("/status/{task_id}")
 def check_status(task_id: str):

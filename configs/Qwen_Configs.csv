@@ -1,0 +1,14 @@
+model_name,goal_type,target,batch_size,learning_rate,epochs,optimizer,mixed_precision,sequence_length
+unsloth/Qwen2-VL-2B-Instruct,Accuracy,80%,16,0.0003,6,AdamW,No,2048
+unsloth/Qwen2-VL-2B-Instruct,Accuracy,82%,16,0.00028,8,AdamW,No,2048
+unsloth/Qwen2-VL-2B-Instruct,Accuracy,84%,12,0.00026,10,AdamW,No,2048
+unsloth/Qwen2-VL-2B-Instruct,Accuracy,85%,12,0.00025,12,AdamW,No,2048
+unsloth/Qwen2-VL-2B-Instruct,Accuracy,86%,8,0.00023,14,AdamW,No,2048
+unsloth/Qwen2-VL-2B-Instruct,Accuracy,87%,8,0.00022,16,AdamW,No,2048
+unsloth/Qwen2-VL-2B-Instruct,Accuracy,88%,6,0.0002,18,AdamW,No,2048
+unsloth/Qwen2-VL-2B-Instruct,Accuracy,89%,4,0.00018,20,AdamW,No,2048
+unsloth/Qwen2-VL-2B-Instruct,Accuracy,90%,4,0.00016,24,AdamW,No,2048
+unsloth/Qwen2-VL-2B-Instruct,Accuracy,91%,2,0.00015,28,AdamW,No,2048
+unsloth/Qwen2-VL-2B-Instruct,Compute,16GB,8,0.0002,4,AdamW 8-bit,Yes,1024
+unsloth/Qwen2-VL-2B-Instruct,Compute,12GB,6,0.00023,3,AdamW 8-bit,Yes,1024
+unsloth/Qwen2-VL-2B-Instruct,Compute,10GB,4,0.00025,2,AdamW 8-bit,Yes,768
