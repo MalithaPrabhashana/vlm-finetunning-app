@@ -33,3 +33,6 @@ pip install -r requirements.txt
 ```bash
 uvicorn main:app --host 0.0.0.0 --port 4000
 ```
+
+pip install --no-deps llama-cpp-python
+pip install gguf
