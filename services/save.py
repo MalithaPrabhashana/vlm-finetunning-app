@@ -1,7 +1,9 @@
 import os
-from huggingface_hub import HfApi
-from services.training import trained_models
 import traceback
+
+from huggingface_hub import HfApi
+
+from services.training import trained_models
 
 # def save_model(model, app_name, hf_username, hf_token):
 #     model_path = f"models/{app_name}_finetuned"
@@ -14,6 +16,7 @@ import traceback
 #     )
 #     return {"message": "Model saved to Hugging Face", "model_path": model_path}
 
+
 def save_model(task_id, app_name, hf_username, hf_token):
     model, tokenizer = trained_models.get(task_id)
     if model is None:
@@ -24,7 +27,11 @@ def save_model(task_id, app_name, hf_username, hf_token):
     print(model_path)
 
     # model.save_pretrained(model_path)
-    model.save_pretrained_merged("model_path", tokenizer, save_method = "q4_k_m",)
+    model.save_pretrained_merged(
+        "model_path",
+        tokenizer,
+        save_method="q4_k_m",
+    )
 
     print("Model saved locally")
 
@@ -36,7 +43,9 @@ def save_model(task_id, app_name, hf_username, hf_token):
     return {"message": "Model saved to Hugging Face", "model_path": model_path}
 
 
-def save_gguf_model(task_id: str, output_dir: str = "gguf_models", quant_method: str = "q4_k_m"):
+def save_gguf_model(
+    task_id: str, output_dir: str = "gguf_models", quant_method: str = "q4_k_m"
+):
     if task_id not in trained_models:
         raise ValueError(f"No model/tokenizer found for task ID {task_id}")
 
@@ -52,12 +61,9 @@ def save_gguf_model(task_id: str, output_dir: str = "gguf_models", quant_method:
         return {
             "message": "Model saved locally in GGUF format",
             "output_path": save_path,
-            "quantization": quant_method
+            "quantization": quant_method,
         }
     except Exception as e:
         print(f"An error occurred while saving the model: {e}")
         traceback.print_exc()
-        return {
-            "message": "Model not saved locally in GGUF format",
-            "error": str(e)
-        }
+        return {"message": "Model not saved locally in GGUF format", "error": str(e)}
