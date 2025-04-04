@@ -21,7 +21,12 @@ def save_model(task_id, app_name, hf_username, hf_token):
 
     model_path = f"models/{app_name}_finetuned"
     os.makedirs(model_path, exist_ok=True)
-    model.save_pretrained(model_path)
+    print(model_path)
+
+    # model.save_pretrained(model_path)
+    model.save_pretrained_merged("model_path", tokenizer, save_method = "q4_k_m",)
+
+    print("Model saved locally")
 
     HfApi().upload_folder(
         folder_path=model_path,
@@ -29,6 +34,7 @@ def save_model(task_id, app_name, hf_username, hf_token):
         token=hf_token,
     )
     return {"message": "Model saved to Hugging Face", "model_path": model_path}
+
 
 def save_gguf_model(task_id: str, output_dir: str = "gguf_models", quant_method: str = "q4_k_m"):
     if task_id not in trained_models:

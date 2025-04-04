@@ -67,14 +67,15 @@ def stream_status(task_id: str):
 
     return StreamingResponse(event_generator(), media_type="text/event-stream")
 
+#TODO: Add validation
 @router.post("/save-model")
 def save_model_req(request: SaveModelRequest):
     try:
-        for task_id in trained_models.items():
-            return save_model(task_id, request.app_name, request.hf_username, request.hf_token)
+        return save_model(request.task_id, request.app_name, request.hf_username, request.hf_token)
     except:
         raise HTTPException(status_code=404, detail="Model not found or training not completed")
 
+#TODO: Add validation
 @router.post("/save-gguf")
 def save_gguf_endpoint(request: GGUFSaveRequest):
     try:
