@@ -1,3 +1,5 @@
+import time
+import pynvml
 from datasets import load_dataset
 from fastapi import HTTPException
 from transformers import (
@@ -20,6 +22,9 @@ AVAILABLE_MODELS = [
 task_status = {}
 trained_models = {}
 
+# Initialize GPU monitoring
+pynvml.nvmlInit()
+gpu_handle = pynvml.nvmlDeviceGetHandleByIndex(0)
 
 class ProgressCallback(TrainerCallback):
     def __init__(self, task_id: str, total_steps: int):
@@ -66,6 +71,7 @@ def train_model(model_name: str, task_id: str):
         raise HTTPException(status_code=400, detail="Invalid model name")
 
     task_status[task_id] = {"status": "RUNNING", "progress": 0, "error": None}
+    results: dict = {}
 
     try:
         model, tokenizer = FastVisionModel.from_pretrained(
@@ -112,8 +118,25 @@ def train_model(model_name: str, task_id: str):
             ),
         )
 
+        # Extract table parameters
+        results["Learning Rate"] = trainer.args.learning_rate
+        results["Batch Size"] = trainer.args.per_device_train_batch_size * trainer.args.gradient_accumulation_steps
+        results["Training Steps"] = trainer.args.max_steps
+        results["Mixed Precision"] = "BF16" if trainer.args.bf16 else "FP16"
+        results["Sequence Length"] = trainer.args.max_seq_length
+
+        # Measure training time
+        start_time = time.time()
         trainer.add_callback(ProgressCallback(task_id, trainer.args.max_steps))
         trainer.train()
+        training_time = (time.time() - start_time) / 3600
+        results["Training Time (hrs)"] = training_time
+
+        # Measure GPU usage
+        mem_info = pynvml.nvmlDeviceGetMemoryInfo(gpu_handle)
+        gpu_usage = (mem_info.used / mem_info.total) * 100
+        results["GPU Usage (%)"] = gpu_usage
+
         task_status[task_id] = {"status": "COMPLETED", "progress": 100, "error": None}
         trained_models[task_id] = (model, tokenizer)
 
