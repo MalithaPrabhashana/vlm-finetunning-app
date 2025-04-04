@@ -8,6 +8,7 @@ from transformers import (TrainerCallback, TrainerControl, TrainerState,
 from trl import SFTConfig, SFTTrainer
 from utils.config_loader import load_model_config
 from utils.dataset_utils import convert_to_conversation
+from services.training_metrics import print_training_summary
 
 AVAILABLE_MODELS = [
     "unsloth/Llama-3.2-11B-Vision-bnb-4bit",
@@ -111,7 +112,10 @@ def train_model(model_name: str, task_id: str):
 
         trainer.add_callback(ProgressCallback(task_id, trainer.args.max_steps))
         trainer.train()
-        task_status[task_id] = {"status": "COMPLETED", "progress": 100, "error": None}
+
+        stats = print_training_summary(trainer)
+
+        task_status[task_id] = {"status": "COMPLETED", "progress": 100, "error": None, "metrics": stats}
         trained_models[task_id] = (model, tokenizer)
 
     except Exception as e:
@@ -181,9 +185,10 @@ def train_model_with_goal(task_id: str, model_name: str, dataset_id: str, goal_t
         trainer.add_callback(ProgressCallback(task_id, trainer.args.max_steps))
         trainer.train()
 
+        stats = print_training_summary(trainer)
         print("[TRAINING COMPLETE] Training completed successfully.")
 
-        task_status[task_id] = {"status": "COMPLETED", "progress": 100, "error": None}
+        task_status[task_id] = {"status": "COMPLETED", "progress": 100, "error": None, "metrics": stats}
         trained_models[task_id] = (model, tokenizer)
 
     except Exception as e:
