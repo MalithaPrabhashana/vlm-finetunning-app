@@ -1,10 +1,9 @@
 import os
-
+from unsloth import FastVisionModel
 import torch
 from fastapi import HTTPException
 from PIL import Image
 from transformers import TextStreamer
-from unsloth import FastVisionModel
 
 
 def run_inference(request):

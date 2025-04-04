@@ -1,12 +1,11 @@
+from unsloth import FastVisionModel, is_bf16_supported
+from unsloth.trainer import UnslothVisionDataCollator
 from datasets import load_dataset
 import traceback
 from fastapi import HTTPException
 from transformers import (TrainerCallback, TrainerControl, TrainerState,
                           TrainingArguments)
 from trl import SFTConfig, SFTTrainer
-from unsloth import FastVisionModel, is_bf16_supported
-from unsloth.trainer import UnslothVisionDataCollator
-
 from utils.config_loader import load_model_config
 from utils.dataset_utils import convert_to_conversation
 
@@ -149,7 +148,7 @@ def train_model_with_goal(task_id: str, model_name: str, dataset_id: str, goal_t
 
         print("[MODEL INIT] Model and tokenizer loaded successfully.")
 
-        dataset = load_dataset(dataset_id, split="train[:10]")
+        dataset = load_dataset("unsloth/Radiology_mini", split="train[:10]")
         converted_dataset = [convert_to_conversation(sample) for sample in dataset]
 
         FastVisionModel.for_training(model)
