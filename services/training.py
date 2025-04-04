@@ -6,7 +6,7 @@ from utils.dataset_utils import convert_to_conversation
 from fastapi import HTTPException
 from transformers import TrainerCallback, TrainingArguments, TrainerState, TrainerControl
 
-AVAILABLE_MODELS = ["unsloth/Llama-3.2-Vision", "unsloth/Qwen2-VL-2B-Instruct-bnb-4bit", "unsloth/Pixtral"]
+AVAILABLE_MODELS = ["unsloth/Llama-3.2-11B-Vision-bnb-4bit", "unsloth/Qwen2-VL-2B-Instruct-bnb-4bit", "unsloth/Pixtral-12B-2409"]
 task_status = {}
 trained_models = {}
 
