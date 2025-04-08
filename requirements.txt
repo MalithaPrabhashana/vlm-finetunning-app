@@ -6,4 +6,5 @@ datasets
 trl
 huggingface_hub
 Pillow
+openpyxl
 python-multipart
